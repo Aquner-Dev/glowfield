@@ -1,0 +1,17 @@
+{
+  "name": "glowfield-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run -w apps/demo dev",
+    "build": "npm run -w packages/glowfield build",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "glowfield": "*",
+    "three": "^0.181.0"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "glowfield",
+  "version": "0.1.0",
+  "description": "A dynamic aurora background component for React / Next.js, powered by Three.js and GLSL shaders.",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "nextjs",
+    "threejs",
+    "shader",
+    "background",
+    "aurora",
+    "glowfield"
+  ],
+  "author": "Aquner",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aquner-Dev/glowfield.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "dependencies": {
+    "three": "^0.171.0"
+  }
+}
