@@ -1,6 +1,6 @@
 {
   "name": "glowfield",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A dynamic aurora background component for React / Next.js, powered by Three.js and GLSL shaders.",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
