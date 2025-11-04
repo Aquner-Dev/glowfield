@@ -57,6 +57,20 @@ npm install
 
 ---
 
+### CI による自動リリース
+
+`main` ブランチにプッシュされると、GitHub Actions (`.github/workflows/release.yml`) が Changesets を使った自動バージョン管理と npm 公開を行います。
+
+- 事前に `npm run changeset` で changeset ファイルをコミットしておくと、CI が未公開の changeset を検出し、自動でバージョンを更新した PR を作成します。
+- PR がマージされると同じワークフローが `npm run changeset-publish` を実行し、`NPM_TOKEN` で認証されたアカウントから npm へ公開します。
+
+Secrets 設定:
+- `NPM_TOKEN`: `npm token create` で発行した公開権限付きトークン
+
+changeset が存在しない場合は、ワークフローは公開をスキップします。
+
+---
+
 ### ライセンス
 
 本リポジトリは MIT ライセンスです。

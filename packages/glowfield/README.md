@@ -1,37 +1,39 @@
 ## glowfield
 
-Three.js と GLSL シェーダーでオーロラのようなグラデーションを描画する React コンポーネントです。Next.js の `app` / `pages` ルートいずれでも利用でき、背景用のキャンバスとして手軽に導入できます。
+WebGL / Three.js と GLSL シェーダーでオーロラのような光の揺らぎを描画する React コンポーネントです。ヒーローセクションやフルスクリーン背景にドロップインで導入できます。
 
 ### 特徴
-- WebGL ベースのシェーダー表現でリッチなアニメーションを実現
-- `colors` / `speed` / `intensity` を調整して雰囲気を簡単にカスタマイズ
-- レイアウト制御用の `className` フックを提供
+- Three.js ベースのフラグメントシェーダーで滑らかなグラデーションアニメーションを実現
+- `colors` / `speed` / `intensity` を変えるだけで雰囲気を簡単に調整
+- `className` でレイアウトやブレンドモードを柔軟に制御
+- TypeScript 型定義を同梱。`AuroraCanvas` の Props も補完されます。
 
 ---
 
 ### インストール
 
 ```bash
-npm install glowfield three
+npm install glowfield
 ```
 
-> `react` / `react-dom` は peerDependencies として 17 以上が必須です。
+> peerDependencies として `react` / `react-dom` が 17 以上必要です。Next.js 14 で動作確認済みです。
 
 ---
 
-### 使い方
+### クイックスタート
 
 ```tsx
+"use client";
 import { AuroraCanvas } from "glowfield";
 
 export default function Hero() {
   return (
-    <section className="relative h-[480px] overflow-hidden">
+    <section className="relative h-[480px] overflow-hidden bg-slate-950">
       <AuroraCanvas
         colors={["#38bdf8", "#9333ea", "#f472b6"]}
         speed={0.35}
         intensity={0.8}
-        className="pointer-events-none"
+        className="pointer-events-none mix-blend-screen"
       />
       <div className="relative z-10 flex h-full items-center justify-center">
         <h1 className="text-4xl font-semibold text-white drop-shadow">
@@ -43,7 +45,9 @@ export default function Hero() {
 }
 ```
 
-コンポーネントは `position: absolute` でラップされた `div` を返します。親要素に `relative` を付与し、必要に応じて `overflow-hidden` で切り取ってください。
+`AuroraCanvas` は `position: absolute` のラッパー要素と WebGL キャンバスを返します。背景オーバーレイとして使う場合は、親要素に `position: relative` と `overflow-hidden` を指定すると扱いやすくなります。
+
+Next.js `app` ルーターなどで利用する場合は、上記のように呼び出しファイルの冒頭で `"use client";` を宣言してください。
 
 ---
 
@@ -51,53 +55,45 @@ export default function Hero() {
 
 | プロパティ | 型 | 既定値 | 説明 |
 | --- | --- | --- | --- |
-| `colors` | `string[]` | `["#7dd3fc", "#93c5fd", "#c4b5fd"]` | グラデーションに使用する 3 色。16 進カラーコード推奨です。 |
-| `speed` | `number` | `0.2` | アニメーション速度。値を上げるほど動きが速くなります。 |
-| `intensity` | `number` | `0.7` | 輝度。1.0 以上にすると光が強くなります。 |
-| `className` | `string` | — | ラッパー要素に追加するクラス。Tailwind 等でレイアウトを調整できます。 |
+| `colors` | `string[]` | `["#7dd3fc", "#93c5fd", "#c4b5fd"]` | グラデーションに使用する 3 色。ベース → 中間 → ハイライトの順で混色されます。 |
+| `speed` | `number` | `0.2` | アニメーション速度。値を上げると揺らぎが速くなります。 |
+| `intensity` | `number` | `0.7` | 発光の強さ。1.0 以上で鮮やかに、0.4 以下で落ち着いた雰囲気になります。 |
+| `className` | `string` | — | ラッパー要素に付与するクラス。Tailwind CSS などでサイズやブレンドモードを調整できます。 |
 
 ---
 
-### ローカル開発・ビルド
+### カスタマイズ例
 
-```bash
-# リポジトリ全体で依存を取得
-npm install
-
-# パッケージをビルド
-npm run build
+```tsx
+<AuroraCanvas
+  colors={["#9deafe", "#6366f1", "#f0abfc"]}
+  speed={0.25}
+  intensity={1.1}
+  className="mix-blend-lighten opacity-80 blur-[1px]"
+/>
 ```
 
-`dist/` ディレクトリは `tsup` によって自動生成され、`package.json` の `files` フィールドにより npm 公開時に含まれます。
+- ハイライトカラーをピンク系に変更し、`mix-blend-lighten` で背景と柔らかく合成しています。
+- ほんのりブラーをかけると UI との境界が自然になります。
 
 ---
 
-### npm 公開手順
+### よくある質問
 
-1. バージョン更新  
-   ```bash
-   cd packages/glowfield
-   npm version patch # または minor / major
-   ```
-2. ビルド成果物の更新  
-   ```bash
-   npm run build
-   ```
-3. 公開前確認（任意）  
-   ```bash
-   npm pack
-   ```
-4. npm にログインして公開  
-   ```bash
-   npm login
-   npm publish --access public
-   ```
-5. 生成された git タグと変更をリポジトリにプッシュ  
-   ```bash
-   git push && git push --tags
-   ```
+**Q. SSR (Next.js) でエラーが出ます。**  
+A. WebGL 描画はクライアント側で行うため、必ずクライアントコンポーネント内でレンダーしてください。`"use client";` の付与と、サーバーコンポーネントからの直接レンダーを避けることがポイントです。
 
-`package.json` には `publishConfig.access = "public"` が設定済みです。scoped パッケージではないため、`--access public` を付与すれば初回公開時もエラーになりません。
+**Q. Canvas のサイズを固定したい。**  
+A. ラッパー要素のサイズに追従するため、親要素に `height` / `width` / `min-height` を指定します。フルスクリーンの場合は `className="fixed inset-0"` のように指定してください。
+
+**Q. パフォーマンスを抑えたい。**  
+A. `speed` や `intensity` を下げるほか、配色を暗めにすると描画コストが下がります。さらに制御したい場合は GitHub リポジトリをフォークし、`AuroraCanvas.tsx` 内のレンダラー設定を変更してください。
+
+---
+
+### 変更履歴
+
+詳細な差分は GitHub (https://github.com/Aquner-Dev/glowfield) のリリース・コミットをご確認ください。Issue や Pull Request での改善提案も歓迎しています。
 
 ---
 
