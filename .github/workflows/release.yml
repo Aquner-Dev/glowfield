@@ -8,7 +8,8 @@ on:
 
 permissions:
   contents: write
-  packages: write
+  pull-requests: write # ← PR作成時に必要
+  packages: write # ← npm publish用（安全のため残す）
 
 jobs:
   release:
@@ -26,9 +27,10 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          registry-url: "https://registry.npmjs.org/" # ← npm registryを明示指定
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci # ← npm install より確実でCI向き
 
       - name: Build packages
         run: npm run build
@@ -36,6 +38,7 @@ jobs:
       - name: Version or publish with Changesets
         uses: changesets/action@v1
         with:
+          # version コマンドと publish コマンドを正確に指定
           version: npm run changeset-version
           publish: npm run changeset-publish
         env:
