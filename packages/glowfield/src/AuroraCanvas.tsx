@@ -11,9 +11,9 @@ export type GlowfieldProps = {
 
 export function AuroraCanvas({
   colors = ["#7dd3fc", "#93c5fd", "#c4b5fd"],
-  speed = 0.2,
-  intensity = 0.7,
-  className
+  speed = 0.8,
+  intensity = 0.5,
+  className,
 }: GlowfieldProps) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -38,7 +38,7 @@ export function AuroraCanvas({
       u_speed: { value: speed },
       u_c0: { value: new THREE.Color(colors[0]) },
       u_c1: { value: new THREE.Color(colors[1]) },
-      u_c2: { value: new THREE.Color(colors[2]) }
+      u_c2: { value: new THREE.Color(colors[2]) },
     };
 
     const frag = `
@@ -65,7 +65,7 @@ export function AuroraCanvas({
       vertexShader: `void main(){ gl_Position = vec4(position,1.0); }`,
       fragmentShader: frag,
       uniforms,
-      transparent: true
+      transparent: true,
     });
 
     const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat);
@@ -73,7 +73,8 @@ export function AuroraCanvas({
 
     const ro = new ResizeObserver(() => {
       if (!rendererRef.current || !wrapRef.current) return;
-      const w = wrapRef.current.clientWidth, h = wrapRef.current.clientHeight;
+      const w = wrapRef.current.clientWidth,
+        h = wrapRef.current.clientHeight;
       rendererRef.current.setSize(w, h);
       (uniforms.u_res.value as THREE.Vector2).set(w, h);
     });
@@ -95,5 +96,12 @@ export function AuroraCanvas({
     };
   }, [colors.join(","), speed, intensity]);
 
-  return <div ref={wrapRef} className={className} style={{position:"absolute", inset:0}} aria-hidden />;
+  return (
+    <div
+      ref={wrapRef}
+      className={className}
+      style={{ position: "absolute", inset: 0 }}
+      aria-hidden
+    />
+  );
 }
